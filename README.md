@@ -17,6 +17,11 @@ names are real, released ones rather than illustrations.
 
 ## How to use it
 
+`hello-web` runs a service, so a container needs its init. Until
+[opencharly/charly#764](https://github.com/opencharly/charly/issues/764) makes charly fetch that
+init by itself, a box composing `hello-web` also composes
+`@github.com/opencharly/layer-supervisord`.
+
 Import the repository and require the candy:
 
 ```yaml
