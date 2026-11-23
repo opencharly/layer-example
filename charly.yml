@@ -21,3 +21,111 @@ search-tools:
               stdout:
                 - contains: charly
               command: printf '{"name":"charly"}' | jq -r .name
+
+python-gobject:
+    candy:
+        description: |
+            The GObject bindings for the system Python. Its package is named differently on each
+            distribution family, so the candy names it once per family and a box that needs the
+            bindings requires the candy instead. This is the per-distribution example candy of
+            opencharly/opencharly's GRIEVANCES.md.
+        distro:
+            arch:
+                package:
+                    - python-gobject
+            fedora:
+                package:
+                    - python3-gobject
+            "debian,ubuntu":
+                package:
+                    - python3-gi
+        plan:
+            - check: the system Python imports the GObject bindings
+              exit_status: 0
+              stdout:
+                - contains: gi-ok
+              command: python3 -c 'import gi; print("gi-ok")'
+
+agent-tools:
+    candy:
+        description: |
+            A container engine and a hypervisor for an agent's work: podman, the headless QEMU
+            and libvirt. This is the nesting example candy of opencharly/opencharly's
+            GRIEVANCES.md: a box that requires it can run containers and VMs inside the
+            deployment it is handed. Its package names are the Arch family's (Arch, CachyOS),
+            so it installs on that family only.
+        distro:
+            arch:
+                package:
+                    - podman
+                    - qemu-base
+                    - libvirt
+        plan:
+            - check: the container engine is installed
+              file:
+                file: /usr/bin/podman
+                exists: true
+            - check: the headless QEMU system emulator is installed
+              file:
+                file: /usr/bin/qemu-system-x86_64
+                exists: true
+            - check: the libvirt client is installed
+              file:
+                file: /usr/bin/virsh
+                exists: true
+
+hello-web:
+    candy:
+        description: |
+            A web server whose page is in the artifact and is served once it runs: two files under
+            /srv/hello, served on port 8080 by Python's built-in HTTP server. Its checks show both
+            phases: the page is checked in the built image, and the running server is checked
+            through its published port. This is the checks example candy of
+            opencharly/opencharly's GRIEVANCES.md. Its service runs under the container init:
+            until opencharly/charly#764 makes charly fetch that init by itself, a box composing
+            this candy also composes '@github.com/opencharly/layer-supervisord'.
+        distro:
+            arch:
+                package:
+                    - python
+            fedora:
+                package:
+                    - python3
+            "debian,ubuntu":
+                package:
+                    - python3
+        port:
+            - 8080
+        service:
+            - name: hello-web
+              exec: python3 -m http.server 8080 --directory /srv/hello
+              restart: always
+              enable: true
+              scope: system
+        plan:
+            - run: write the hello page
+              write: /srv/hello/hello
+              mode: "0644"
+              run_as: root
+              content: |
+                  hello
+            - run: write the health page
+              write: /srv/hello/health
+              mode: "0644"
+              run_as: root
+              content: |
+                  ok
+            - check: the page is in the artifact
+              file:
+                file: /srv/hello/hello
+                contains: hello
+            - check: the server answers at the hello endpoint
+              context:
+                - runtime
+              http:
+                http: http://127.0.0.1:${HOST_PORT:8080}/hello
+                status: 200
+                body:
+                    - contains: hello
+              eventually: 30s
+              retry_interval: 2s

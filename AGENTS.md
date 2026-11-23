@@ -1,12 +1,13 @@
 # AGENTS.md — layer-example
 
-The example candy that opencharly/opencharly's `GRIEVANCES.md` imports. The whole candy is
-`charly.yml` at the repository root: the `search-tools` package list and its `plan:` checks.
-There is no source tree, no service and no skill.
+The example candies that opencharly/opencharly's `GRIEVANCES.md` imports. Everything is
+`charly.yml` at the repository root: four candies and their `plan:` checks. There is no source
+tree and no skill.
 
 Canonical files:
 
-- `charly.yml`: the `search-tools:` candy.
+- `charly.yml`: the `search-tools:`, `python-gobject:`, `agent-tools:` and `hello-web:`
+  candies.
 - `.github/workflows/tag-on-merge.yml`: the CalVer tag and `CHANGELOG/` on merge.
 - `README.md`: the user overview only, never agent guidance.
 
@@ -23,8 +24,8 @@ Canonical files:
 
 ## Modify this repo
 
-- This candy is quoted by `GRIEVANCES.md` §1 in opencharly/opencharly. A change to its name or
-  its package list changes that document's example. Land the change here first, then update
+- These candies are quoted by `GRIEVANCES.md` in opencharly/opencharly. A change to a name,
+  a package list, a file, a service or a check changes that document's examples. Land the change here first, then update
   the document and its `import:` release and digest.
 
 ## Landing
