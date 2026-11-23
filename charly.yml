@@ -1,0 +1,23 @@
+search-tools:
+    candy:
+        description: |
+            Two command-line search tools, installed as packages and nothing else.
+            The example candy of opencharly/opencharly's GRIEVANCES.md (§1): `ripgrep`
+            and `jq` carry the same package name on every distribution charly targets
+            and need no configuration, service or user, so the whole candy is one
+            `package:` list. A box that needs both requires this candy instead of
+            repeating the list.
+        package:
+            - ripgrep
+            - jq
+        plan:
+            - check: rg finds the matching line in piped input
+              exit_status: 0
+              stdout:
+                - contains: beta
+              command: printf 'alpha\nbeta\ngamma\n' | rg beta
+            - check: jq extracts a field from a JSON document
+              exit_status: 0
+              stdout:
+                - contains: charly
+              command: printf '{"name":"charly"}' | jq -r .name
